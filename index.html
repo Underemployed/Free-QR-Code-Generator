@@ -28,7 +28,7 @@
             background: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 5px;
             line-height: 1.6;
             display: flex;
             flex-direction: column;
@@ -88,7 +88,6 @@
 
         input[type="text"] {
             width: 100%;
-            /* Padding right accommodates 2 buttons (approx 80px) */
             padding: 14px 90px 14px 16px;
             border: 2px solid var(--border);
             border-radius: 12px;
@@ -102,7 +101,7 @@
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
-        /* Action Buttons Group (Right side of input) */
+        /* Input Actions (Copy/Paste btns inside input) */
         .input-actions {
             position: absolute;
             right: 8px;
@@ -238,13 +237,43 @@
             font-style: italic;
         }
 
-        /* Download Button */
+        /* --- New Button Grid for Actions --- */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* Secondary Button (Share/Copy) */
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Primary Download Button */
         .btn-download {
             background: var(--primary);
             color: white;
             border: none;
-            width: 100%;
-            max-width: 300px;
             padding: 14px;
             border-radius: 10px;
             font-size: 16px;
@@ -256,6 +285,8 @@
             gap: 8px;
             transition: background 0.2s;
             box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+            grid-column: 1 / -1;
+            /* Spans full width */
         }
 
         .btn-download:hover {
@@ -264,7 +295,6 @@
 
         /* Ad Spaces */
         .ad-banner {
-            
             grid-column: 1 / -1;
             background: #e2e8f0;
             height: 100px;
@@ -281,9 +311,9 @@
 
         /* Footer */
         footer {
-            margin-top: 0;
+            margin-top: 20px;
             text-align: center;
-            padding-top:10px ;
+            padding: 0;
             border-top: 1px solid #e2e8f0;
             color: #64748b;
             font-size: 0.9em;
@@ -328,7 +358,6 @@
                 scroll-margin-top: 20px;
             }
 
-            /* Hides preview on mobile if empty */
             .preview-container.empty-state {
                 display: none;
             }
@@ -366,7 +395,6 @@
                             </svg>
                         </button>
                     </div>
-
                 </div>
             </div>
 
@@ -403,17 +431,38 @@
             </div>
         </div>
 
-        <div class="card preview-container empty-state" id="previewCard" tabindex="0" title="Click and paste here">
+        <div class="card preview-container empty-state" id="previewCard" tabindex="0" title="Click to paste">
             <div id="canvas"></div>
 
-            <button class="btn-download" onclick="downloadQR()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Download PNG
-            </button>
+            <div class="actions-grid">
+                <button class="btn-secondary" onclick="shareQR()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    Share
+                </button>
+                <button class="btn-secondary" onclick="copyImage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button class="btn-download" onclick="downloadQR()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download PNG
+                </button>
+            </div>
 
             <div class="url-display" id="urlDisplay"></div>
         </div>
@@ -470,10 +519,8 @@
             const dotsType = document.getElementById("dotsType").value;
 
             if (!rawValue.trim()) {
-                // Empty State
                 clearBtn.classList.add("hidden");
                 previewCard.classList.add("empty-state"); // Hide on mobile
-
                 urlDisplay.innerHTML = '<span class="url-placeholder">https://example.com</span>';
                 qrCode.update({
                     data: PLACEHOLDER_QR_TEXT,
@@ -483,7 +530,6 @@
                 return;
             }
 
-            // Active State
             clearBtn.classList.remove("hidden");
             previewCard.classList.remove("empty-state"); // Show on mobile
 
@@ -497,6 +543,46 @@
             });
         };
 
+        // --- HELPER: GET BLOB ---
+        function getQRBlob() {
+            return new Promise(resolve => {
+                canvasContainer.querySelector('canvas').toBlob(resolve, 'image/png');
+            });
+        }
+
+        // --- ACTION: SHARE ---
+        async function shareQR() {
+            try {
+                const blob = await getQRBlob();
+                const file = new File([blob], "qr-code.png", { type: "image/png" });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'QR Code',
+                        text: dataInput.value || 'Check out this QR Code'
+                    });
+                } else {
+                    showToast("Sharing not supported");
+                }
+            } catch (err) {
+                console.log("Share cancelled or failed");
+            }
+        }
+
+        // --- ACTION: COPY IMAGE ---
+        async function copyImage() {
+            try {
+                const blob = await getQRBlob();
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]);
+                showToast("Image copied!");
+            } catch (err) {
+                showToast("Copy failed");
+            }
+        }
+
         // --- PASTE BUTTON LOGIC ---
         pasteBtn.addEventListener("click", async () => {
             try {
@@ -505,19 +591,17 @@
                     dataInput.value = text;
                     updateQR();
                     showToast("Pasted!");
-                    // On mobile, scroll to result
                     if (window.innerWidth < 850) {
                         setTimeout(() => previewCard.scrollIntoView({ behavior: 'smooth' }), 100);
                     }
                 }
             } catch (err) {
-                // Fallback: Focus input so user can paste manually
                 dataInput.focus();
                 showToast("Long press input to paste");
             }
         });
 
-        // --- PASTE ON IMAGE LOGIC ---
+        // --- PASTE ON CARD LOGIC ---
         previewCard.addEventListener('paste', (event) => {
             event.preventDefault();
             const pasteData = (event.clipboardData || window.clipboardData).getData('text');
@@ -529,6 +613,7 @@
         });
 
         previewCard.addEventListener('click', async (e) => {
+            // Ensure we aren't clicking a button
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
                 try {
                     const text = await navigator.clipboard.readText();
