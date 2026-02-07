@@ -560,8 +560,7 @@
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
-                        title: 'QR Code',
-                        text: dataInput.value || 'Check out this QR Code'
+                        title: 'QR Code'
                     });
                 } else {
                     showToast("Sharing not supported");
